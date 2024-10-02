@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
+import Script from "next/script";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,6 +28,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <Script
+        src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}&libraries=services,clusterer&autoload=false`}
+        strategy="beforeInteractive"
+      />
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased w-full flex flex-col items-center`}>
         <div className="w-full flex flex-col min-h-screen h-full">
           <Navigation />
