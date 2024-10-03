@@ -41,8 +41,8 @@ export default function PetList() {
   }, []);
 
   return (
-    <div className="w-full grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
-      {missingPetList.map((pet: IPet) => {
+    <div className="w-full grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-6">
+      {missingPetList.map((pet: IPet, index: number) => {
         return <AbandonmentCard {...pet} />;
       })}
     </div>

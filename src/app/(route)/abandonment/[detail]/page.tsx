@@ -1,7 +1,7 @@
 "use clien";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/app/_components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import BasicMap from "@/components/Map";
+import BasicMap from "@/app/_components/Map";
 import Link from "next/link";
 import Image from "next/image";
 
