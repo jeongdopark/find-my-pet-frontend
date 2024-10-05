@@ -1,5 +1,5 @@
 "use client";
-import { BasicDialog } from "../Dialog";
+import { KakaoLoginDialog } from "../KakaoLoginDialog";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 
@@ -12,9 +12,9 @@ export default function Navigation() {
           Find My Pet
         </div>
         <div className="flex gap-6">
-          <BasicDialog>
+          <KakaoLoginDialog>
             <Button variant="outline">로그인</Button>
-          </BasicDialog>
+          </KakaoLoginDialog>
         </div>
       </nav>
     </div>

@@ -1,12 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/app/_components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/app/_components/ui/tabs";
 import Image from "next/image";
 import { useState } from "react";
 import image from "../static/image/banner.jpg";
 import { ChevronRight } from "lucide-react";
-import PetList from "@/components/main/PetList";
+import PetList from "@/app/_components/main/PetList";
 import {
   Pagination,
   PaginationContent,
@@ -15,7 +15,8 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
+} from "@/app/_components/ui/pagination";
+import { LostPetDialog } from "./_components/LostPetDialog";
 
 export default function Home() {
   const test = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -56,7 +57,11 @@ export default function Home() {
             </TabsTrigger>
           </TabsList>
         </Tabs>
-        {activeTabValue === "missing" && <Button className="absolute right-0">실종 동물 등록</Button>}
+        {activeTabValue === "missing" && (
+          <LostPetDialog>
+            <Button className="absolute right-0">실종 동물 등록</Button>
+          </LostPetDialog>
+        )}
       </div>
       {activeTabValue === "abandonment" ? <PetList /> : null}
       <Pagination>

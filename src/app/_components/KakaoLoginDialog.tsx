@@ -11,10 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/app/_components/ui/dialog";
-import { Input } from "@/app/_components/ui/input";
-import { Label } from "@/app/_components/ui/label";
 
-export function BasicDialog({ children }: { children: React.ReactElement }) {
+export function KakaoLoginDialog({ children }: { children: React.ReactElement }) {
   const handleKakaoLogin = () => {
     const kakaoAuthURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=970edb7ddb56fe95881fe5ad38de1ee7&redirect_uri=http://localhost:3000/auth/kakao`;
     window.location.href = kakaoAuthURL;
@@ -32,7 +30,6 @@ export function BasicDialog({ children }: { children: React.ReactElement }) {
           <Button type="button" onClick={handleKakaoLogin}>
             Kakao
           </Button>
-          <Button type="button">Google</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
