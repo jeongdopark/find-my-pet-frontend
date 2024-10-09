@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import AbandonmentCard from "../AbandonmentCard";
+import { PetListSkeleton } from "../skeleton/PetListSkeleton";
+import { useRouter } from "next/navigation";
+import AbandonmentPagination from "../AbandonmentPagination";
 
 export interface IPet {
   desertionNo: string;
@@ -29,22 +32,41 @@ export interface IPet {
 }
 
 export default function PetList() {
-  const [missingPetList, setMissingPetList] = useState([]);
+  const router = useRouter()
+  const [abandonmentPetList, setAbandonmentPetList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetch(process.env.NEXT_PUBLIC_API_KEY!).then((res) => res.json());
-      setMissingPetList(data.response.body.items.item);
+      setIsLoading(true);
+      const data = await fetch(`${process.env.NEXT_PUBLIC_API_KEY!}&pageNo=${currentPage}`).then((res) => res.json());
+      setAbandonmentPetList(data.response.body.items.item);
+      setIsLoading(false);
     };
 
     fetchData();
-  }, []);
+  }, [currentPage]);
 
   return (
-    <div className="w-full grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-6">
-      {missingPetList.map((pet: IPet, index: number) => {
-        return <AbandonmentCard {...pet} />;
-      })}
+    <div>
+      <div className="w-full grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-6">
+        {isLoading ? 
+          <PetListSkeleton/>
+          :
+          abandonmentPetList.map((pet: IPet) => {
+            return (
+                <div key={pet.desertionNo} onClick={() => { 
+                  router.push(`/abandonment/${pet.desertionNo}`)
+                  localStorage.setItem('petInfo',JSON.stringify(pet))
+                }}>
+                  <AbandonmentCard {...pet} key={pet.desertionNo} />
+                </div>
+              );
+          })
+        }
+      </div>
+      <AbandonmentPagination currentPage={currentPage} setCurrentPage={setCurrentPage}/>
     </div>
   );
 }
