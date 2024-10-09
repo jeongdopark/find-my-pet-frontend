@@ -31,7 +31,7 @@ export function Map({address}:{address:string}) {
                         // 정상적으로 검색이 완료됐으면 
                         if (status === kakao.maps.services.Status.OK) {
                             setIsValidAddress(true)
-                            const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                            const coords = new kakao.maps.LatLng(Number(result[0].y), Number(result[0].x));
 
                             // 결과값으로 받은 위치를 마커로 표시합니다
                             const marker = new kakao.maps.Marker({
