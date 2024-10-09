@@ -1,9 +1,6 @@
-import { Copy } from "lucide-react";
-
 import { Button } from "@/app/_components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -13,8 +10,9 @@ import {
 } from "@/app/_components/ui/dialog";
 
 export function KakaoLoginDialog({ children }: { children: React.ReactElement }) {
+  
   const handleKakaoLogin = () => {
-    const kakaoAuthURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=970edb7ddb56fe95881fe5ad38de1ee7&redirect_uri=http://localhost:3000/auth/kakao`;
+    const kakaoAuthURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY}&redirect_uri=http://localhost:3000/auth/kakao`;
     window.location.href = kakaoAuthURL;
   };
 
