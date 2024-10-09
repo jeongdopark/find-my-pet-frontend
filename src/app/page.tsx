@@ -7,21 +7,14 @@ import { useState } from "react";
 import image from "../static/image/banner.jpg";
 import { ChevronRight } from "lucide-react";
 import PetList from "@/app/_components/main/PetList";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/app/_components/ui/pagination";
-import { LostPetDialog } from "./_components/LostPetDialog";
+import { useRouter } from "next/navigation";
+import { PetListSkeleton } from "./_components/skeleton/PetListSkeleton";
+
 
 export default function Home() {
-  const test = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-  const [activeTabValue, setActiveTabValue] = useState<"missing" | "abandonment">("abandonment");
-  console.log(activeTabValue);
+  const [activeTabValue, setActiveTabValue] = useState<"lost" | "abandonment">("abandonment");
+  const router = useRouter();  
+
   return (
     <div className="flex flex-col  w-full items-center gap-6">
       <div className="w-full flex justify-center">
@@ -49,7 +42,7 @@ export default function Home() {
       <div className="relative flex w-full justify-center items-center">
         <Tabs defaultValue={activeTabValue} className="w-[400px] flex justify-center">
           <TabsList>
-            <TabsTrigger value="missing" onClick={() => setActiveTabValue("missing")}>
+            <TabsTrigger value="lost" onClick={() => setActiveTabValue("lost")}>
               실종 동물
             </TabsTrigger>
             <TabsTrigger value="abandonment" onClick={() => setActiveTabValue("abandonment")}>
@@ -57,37 +50,12 @@ export default function Home() {
             </TabsTrigger>
           </TabsList>
         </Tabs>
-        {activeTabValue === "missing" && (
-          <LostPetDialog>
-            <Button className="absolute right-0">실종 동물 등록</Button>
-          </LostPetDialog>
+        {activeTabValue === "lost" && (
+          <Button className="absolute right-0" onClick={() => router.push('/register')}>실종 동물 등록</Button>
         )}
       </div>
-      {activeTabValue === "abandonment" ? <PetList /> : null}
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious href="#" />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">1</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#" isActive>
-              2
-            </PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">3</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext href="#" />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+      {activeTabValue === "abandonment" ? <PetList /> : <div className="w-full grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-6"><PetListSkeleton/></div>}
+
     </div>
   );
 }
