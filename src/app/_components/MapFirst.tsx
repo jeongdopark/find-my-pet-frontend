@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-export function Map({address}:{address:string}) {
+export function MapFirst({address}:{address:string}) {
+    console.log(address)
     const [isValidAddress, setIsValidAddress] = useState(false);
     const container = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -13,14 +14,14 @@ export function Map({address}:{address:string}) {
 
             script.onload = () => {
                 kakao.maps.load(function() {
-                    const mapContainer = document.getElementById('map')!;
+                    const mapContainer = document.getElementById('map1')!;
                     const mapOption = {
                         center: new kakao.maps.LatLng(33.450701, 126.570667),
                         level: 3
                     };
 
                     // 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
-                    const map = new kakao.maps.Map(mapContainer, mapOption);
+                    const map1 = new kakao.maps.Map(mapContainer, mapOption);
 
                    // geocorder 객체 생성합니다.
                     const geocorder = new kakao.maps.services.Geocoder();
@@ -35,18 +36,18 @@ export function Map({address}:{address:string}) {
 
                             // 결과값으로 받은 위치를 마커로 표시합니다
                             const marker = new kakao.maps.Marker({
-                                map: map,
+                                map: map1,
                                 position: coords
                             });
 
                             // 인포윈도우로 장소에 대한 설명을 표시합니다
                             const infowindow = new kakao.maps.InfoWindow({
-                                content: '<div style="width:150px;text-align:center;padding:6px 0;">실종 위치</div>'
+                                content: '<div style="width:150px;text-align:center;padding:6px 0;">발견 위치</div>'
                             });
-                            infowindow.open(map, marker);
+                            infowindow.open(map1, marker);
 
                             // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-                            map.setCenter(coords);
+                            map1.setCenter(coords);
                         }else{
                             setIsValidAddress(false)
                         }
@@ -68,7 +69,7 @@ export function Map({address}:{address:string}) {
                 </div>
             </>
         }
-        <div id="map" className='z-10 w-full h-full' ref={container}></div>
+        <div id="map1" className='z-10 w-full h-full' ref={container}></div>
     </div>  
   )
 }
