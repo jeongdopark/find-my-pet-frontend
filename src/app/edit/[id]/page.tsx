@@ -20,17 +20,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { TimePicker } from "@/components/ui/TimePicker";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
-import { MapFirst } from "../_components/MapFirst";
+import { MapFirst } from "../../_components/MapFirst";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useState } from "react";
-import { formatTimeToISOString } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import apiClient from "@/lib/api";
+import useLostPet from "@/store/lostPetStore";
+
 
 const formSchema = z.object({
   title: z.string()
@@ -40,9 +41,7 @@ const formSchema = z.object({
   phoneNum: z.string()
     .regex(/^010\d{8}$/, { message: "올바른 핸드폰 번호를 입력해 주세요." }),
 
-  gratuity: z.string()
-    .nonempty({ message: "사례금 없을 시 0을 입력해 주세요." }),
-
+  gratuity: z.string().nonempty({ message: "사례금 없을 시 0을 입력해 주세요." }),
   gender: z.enum(['male', 'female']),
   description: z.string()
     .min(1, { message: "상세 설명을 입력해 주세요." })
@@ -50,8 +49,6 @@ const formSchema = z.object({
 
   place: z.string()
     .nonempty({ message: "장소를 입력해 주세요." }),
-
-  images: z.any(),
   time: z.date({
     required_error: "시간을 입력해 주세요.",
     invalid_type_error: "올바른 날짜 형식을 입력해 주세요."
@@ -60,67 +57,39 @@ const formSchema = z.object({
   }),
 });
 
-export default function LostPetRegister() {
+export default function LostPetRegister({ params }: { params: { id: string } }) {
   const router = useRouter()
   const {toast} = useToast()
+  const lostPetInfo = useLostPet((state) => state.lostPet)
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { title: "" },
+    defaultValues: { 
+      title: lostPetInfo?.title,
+      phoneNum: lostPetInfo?.phoneNum,
+      gratuity: String(lostPetInfo?.gratuity),
+      gender: lostPetInfo?.gender as 'male' | 'female',
+      description: lostPetInfo?.description,
+      place: lostPetInfo?.place,
+    },
   });
+  const ID = params.id
+  
 
   const watchValues = form.watch(); // 입력 값 모니터링
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]); // 이미지 미리보기 상태
+  console.log(watchValues)
   const [error, setError] = useState<string | null>(null); // 에러 메시지 상태
 
-  const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-
-    if (files) {
-      const newFiles = Array.from(files);
-
-      if (imagePreviews.length + newFiles.length > 3) {
-        setError("최대 3개의 이미지만 업로드할 수 있습니다."); // 에러 메시지 설정
-        return;
-      }
-
-      const newPreviews = newFiles.map((file) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        return new Promise<string>((resolve) => {
-          reader.onloadend = () => resolve(reader.result as string);
-        });
-      });
-
-      Promise.all(newPreviews).then((previews) => {
-        setImagePreviews((prev) => [...prev, ...previews]); // 기존 이미지에 추가
-        setError(null); // 에러 메시지 초기화
-      });
-    }
-  };
-
-  const handleImageRemove = (index: number) => {
-    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
-  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const formData = new FormData();
-    if (values.images) {
-      (Array.from(values.images) as File[]).forEach((file: File) => {
-        formData.append('image', file); // images 필드로 파일 배열 전송
-      });
-    }
+    console.log(values)
+    const body = {...values, postId: ID, lat:0, lng:0}
     // 3. API 호출
-    await apiClient.post(
-      `/post?title=${values.title}&phoneNum=${values.phoneNum}&time=${formatTimeToISOString(values.time)}&place=${values.place}&gender=${values.gender}&gratuity=${values.gratuity}&description=${values.description}&lat=1&lng=1`, 
-      formData, {
-          headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+    await apiClient.put(
+      `/post`, body)
     .then(() => { 
         toast({
-          title: "등록 완료",
-          description: "실종 게시글이 등록되었습니다.",
+          title: "수정 완료",
+          description: "게시글이 수정되었습니다.",
         })
         router.push('/')
     })  
@@ -285,44 +254,10 @@ export default function LostPetRegister() {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="images"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>사진들</FormLabel>
-                  <FormControl>
-                    <Input
-                      id="pictures"
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={(e) => {
-                        field.onChange(e.target.files);
-                        handleImagesChange(e);
-                      }}
-                    />
-                  </FormControl>
-                  {error && <p className="text-red-500">{error}</p>}
-                  <div className="grid grid-cols-3 gap-4 mt-4">
-                    {imagePreviews.map((src, index) => (
-                      <img
-                        key={index}
-                        src={src}
-                        alt={`미리보기 ${index + 1}`}
-                        className="w-full h-auto cursor-pointer"
-                        onClick={() => handleImageRemove(index)} // 클릭 시 삭제
-                      />
-                    ))}
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
+        
             <div className="w-full flex justify-end">
               <Button type="submit" size="lg" variant="default">
-                등록하기
+                수정하기
               </Button>
             </div>
           </form>
