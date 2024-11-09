@@ -19,6 +19,18 @@ export default function Home() {
   const router = useRouter();  
   const {toast} = useToast()
   const setLogout = useIsLoginStore((state) => state.setLogout)
+  const isLogin = useIsLoginStore((state) => state.isLogin)
+
+  const handleRegisterClick = () => {
+    if(isLogin){
+      router.push('/register')
+    }else{
+      toast({
+        title: "실종 동물 등록",
+        description: "로그인이 필요합니다.",
+      })
+    }
+  }
 
   useEffect(() => {
     if(!LocalStorage.getItem('rt')){
@@ -46,10 +58,7 @@ export default function Home() {
               가이드를 제공합니다.
             </p>
             <div className="w-full flex justify-end">
-              <Button variant="outline" onClick={() => toast({
-                  title: "💡",
-                  description: "서비스 준비 중입니다.",
-                })}>
+              <Button variant="outline" onClick={() => router.push('/guide')}>
                 가이드
                 <ChevronRight size="18" />
               </Button>
@@ -69,7 +78,7 @@ export default function Home() {
           </TabsList>
         </Tabs>
         {activeTabValue === "lost" && (
-          <Button size="default" className="xs:absolute xs:right-0 xs:text-base text-sm" onClick={() => router.push('/register')}>실종 동물 등록</Button>
+          <Button size="default" className="xs:absolute xs:right-0 xs:text-base text-sm" onClick={() => handleRegisterClick()}>실종 동물 등록</Button>
         )}
       </div>
       {activeTabValue === "abandonment" ? <AbandonmentList /> : <LostList/>}
